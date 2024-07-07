@@ -1,0 +1,60 @@
+package main
+
+import (
+	"flag"
+	"net/http"
+	"os"
+
+	_ "github.com/go-sql-driver/mysql"
+	"go.uber.org/zap"
+	"pinkamkak.com/web/internal/models"
+)
+
+func main() {
+	addr := flag.String("addr", ":4000", "HTTP network address")
+	dsn := flag.String("dsn", "web:pinkamkak@/snippetbox?parseTime=true", "MySQL data source name")
+	flag.Parse()
+
+	// logger
+	logger, _ := zap.NewProduction() // 創建一個新的 zap 記錄器
+	defer logger.Sync()              // 在應用結束時同步日誌緩存
+
+	// db
+	db, dbErr := openDB(*dsn)
+	if dbErr != nil {
+		logger.Error(dbErr.Error())
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	// template cache
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+
+	app := &application{
+		logger:        logger,
+		snippets:      &models.SnippetModel{DB: db},
+		templateCache: templateCache,
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/{$}", app.home)
+	mux.HandleFunc("/snippet/view/{id}", app.snippetView)
+	mux.HandleFunc("/snippet/create", app.snippetCreate)
+
+	fileServer := http.FileServer(http.Dir("./ui/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+
+	customHandler := &customHandler{}
+	mux.Handle("/custom", customHandler)
+
+	logger.Info("Starting server", zap.String("address", *addr))
+	httpErr := http.ListenAndServe(*addr, app.recoverPanic(app.logRequest(mux)))
+	if httpErr != nil {
+		logger.Fatal("Server failed to start", zap.Error(httpErr))
+		os.Exit(1)
+	}
+}
