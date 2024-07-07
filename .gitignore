@@ -1,0 +1,68 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.coverprofile
+
+# Configuration file for IDEs
+.idea/
+.vscode/
+
+# Dependency directories (remove the comment below if you use vendoring)
+vendor/
+
+# Go workspace file
+go.work
+
+# Node modules (for frontend dependencies)
+node_modules/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+*.iml
+*.ipr
+*.iws
+
+# Built binary artifacts
+bin/
+obj/
+*.o
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.old
+*.orig
+*.rej
+*.gz
+*.zip
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.lzma
+*.7z
+
+# Go modules
+/go.mod
+/go.sum
+
+# Environment files
+.env
+.env.*
+
