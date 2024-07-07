@@ -66,3 +66,4 @@ obj/
 .env
 .env.*
 
+tmp/
