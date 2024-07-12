@@ -28,7 +28,6 @@ type application struct {
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	app.logger.Info("Home handler called")
-	w.Header().Add("Server", "Go")
 
 	snippets, err := app.snippets.Latest()
 	if err != nil {

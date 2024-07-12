@@ -16,8 +16,8 @@ func main() {
 	flag.Parse()
 
 	// logger
-	logger, _ := zap.NewProduction() // 創建一個新的 zap 記錄器
-	defer logger.Sync()              // 在應用結束時同步日誌緩存
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
 
 	// db
 	db, dbErr := openDB(*dsn)
@@ -39,18 +39,7 @@ func main() {
 		snippets:      &models.SnippetModel{DB: db},
 		templateCache: templateCache,
 	}
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("/{$}", app.home)
-	mux.HandleFunc("/snippet/view/{id}", app.snippetView)
-	mux.HandleFunc("/snippet/create", app.snippetCreate)
-
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-
-	customHandler := &customHandler{}
-	mux.Handle("/custom", customHandler)
-
+	mux := app.routes()
 	logger.Info("Starting server", zap.String("address", *addr))
 	httpErr := http.ListenAndServe(*addr, app.recoverPanic(app.logRequest(mux)))
 	if httpErr != nil {
