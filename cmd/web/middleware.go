@@ -15,7 +15,8 @@ func (app *application) logRequest(next http.Handler) http.Handler {
 			app.logger.Info("Request",
 				zap.String("method", r.Method),
 				zap.String("url", r.URL.String()),
-				zap.Duration("duration", time.Since(start)))
+				zap.Duration("duration", time.Since(start)),
+				zap.String("ip", r.RemoteAddr))
 		}()
 		next.ServeHTTP(w, r)
 	})
