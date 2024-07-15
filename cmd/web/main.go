@@ -41,7 +41,7 @@ func main() {
 	}
 	mux := app.routes()
 	logger.Info("Starting server", zap.String("address", *addr))
-	httpErr := http.ListenAndServe(*addr, app.recoverPanic(app.logRequest(mux)))
+	httpErr := http.ListenAndServe(*addr, mux)
 	if httpErr != nil {
 		logger.Fatal("Server failed to start", zap.Error(httpErr))
 		os.Exit(1)
