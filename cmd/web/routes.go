@@ -14,6 +14,7 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/{$}", app.home)
 	mux.HandleFunc("/snippet/view/{id}", app.snippetView)
 	mux.HandleFunc("/snippet/create", app.snippetCreate)
+	mux.HandleFunc("POST /snippet/create", app.snippetCreatePost)
 
 	customHandler := &customHandler{}
 	mux.Handle("/custom", customHandler)
